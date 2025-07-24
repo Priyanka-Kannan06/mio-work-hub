@@ -69,9 +69,9 @@ export const useDashboard = () => {
     return Promise.resolve();
   };
 
-  const downloadFile = async (fileUrl: string, filename: string) => {
-    // Mock implementation - replace with Supabase storage download
-    console.log('Downloading file:', filename);
+  const deleteEntry = async (id: string) => {
+    // Mock implementation - replace with Supabase delete
+    setEntries(prev => prev.filter(entry => entry.id !== id));
     return Promise.resolve();
   };
 
@@ -80,6 +80,6 @@ export const useDashboard = () => {
     loading,
     addEntry,
     updateEntry,
-    downloadFile
+    deleteEntry
   };
 };

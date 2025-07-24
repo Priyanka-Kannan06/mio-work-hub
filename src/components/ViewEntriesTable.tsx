@@ -6,19 +6,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { DashboardEntry, FilterOptions } from '@/types/dashboard';
-import { Search, Filter, Download, Edit, Calendar } from 'lucide-react';
+import { Search, Filter, Edit, Trash2, Eye } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ViewEntriesTableProps {
   entries: DashboardEntry[];
   onEdit: (entry: DashboardEntry) => void;
-  onDownload: (fileUrl: string, filename: string) => void;
+  onDelete: (id: string) => void;
 }
 
-export const ViewEntriesTable = ({ entries, onEdit, onDownload }: ViewEntriesTableProps) => {
+export const ViewEntriesTable = ({ entries, onEdit, onDelete }: ViewEntriesTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({
     dateRange: 'last10days'
   });
+  const { toast } = useToast();
 
   const filteredEntries = entries.filter(entry => {
     const matchesSearch = 
@@ -62,6 +64,24 @@ export const ViewEntriesTable = ({ entries, onEdit, onDownload }: ViewEntriesTab
       return <Badge variant="destructive">Overdue</Badge>;
     }
     return <Badge variant="secondary">Pending</Badge>;
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this entry?')) {
+      try {
+        await onDelete(id);
+        toast({
+          title: "Entry Deleted",
+          description: "The entry has been successfully deleted.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete entry. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   return (
@@ -140,15 +160,17 @@ export const ViewEntriesTable = ({ entries, onEdit, onDownload }: ViewEntriesTab
                         variant="outline"
                         size="sm"
                         onClick={() => onEdit(entry)}
+                        title="Edit entry"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => onDownload('', 'report.pdf')}
+                        onClick={() => handleDelete(entry.id)}
+                        title="Delete entry"
                       >
-                        <Download className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>

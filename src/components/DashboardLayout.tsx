@@ -1,9 +1,7 @@
 
 import { ReactNode, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
-  LayoutDashboard, 
   Plus, 
   Eye, 
   LogOut, 
@@ -13,8 +11,8 @@ import {
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  currentView: 'dashboard' | 'add' | 'view';
-  onViewChange: (view: 'dashboard' | 'add' | 'view') => void;
+  currentView: 'add' | 'view';
+  onViewChange: (view: 'add' | 'view') => void;
   onLogout: () => void;
 }
 
@@ -27,7 +25,6 @@ export const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const menuItems = [
-    { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { key: 'add', label: 'Add Entry', icon: Plus },
     { key: 'view', label: 'View Entries', icon: Eye },
   ];
@@ -54,7 +51,7 @@ export const DashboardLayout = ({
       } lg:translate-x-0`}>
         <div className="flex flex-col h-full">
           <div className="p-6 border-b">
-            <h2 className="text-xl font-bold text-foreground">Admin Dashboard</h2>
+            <h2 className="text-xl font-bold text-foreground">Project Manager</h2>
           </div>
           
           <nav className="flex-1 p-4">
@@ -67,7 +64,7 @@ export const DashboardLayout = ({
                       variant={currentView === item.key ? 'default' : 'ghost'}
                       className="w-full justify-start"
                       onClick={() => {
-                        onViewChange(item.key as 'dashboard' | 'add' | 'view');
+                        onViewChange(item.key as 'add' | 'view');
                         setSidebarOpen(false);
                       }}
                     >

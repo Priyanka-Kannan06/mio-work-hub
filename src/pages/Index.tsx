@@ -2,17 +2,18 @@
 import { useState } from 'react';
 import { LoginForm } from '@/components/LoginForm';
 import { DashboardLayout } from '@/components/DashboardLayout';
-import { DashboardStats } from '@/components/DashboardStats';
 import { AddEntryForm } from '@/components/AddEntryForm';
 import { ViewEntriesTable } from '@/components/ViewEntriesTable';
+import { EditEntryForm } from '@/components/EditEntryForm';
 import { useAuth } from '@/hooks/useAuth';
 import { useDashboard } from '@/hooks/useDashboard';
 import { DashboardEntry } from '@/types/dashboard';
 
 const Index = () => {
   const { user, loading: authLoading, login, logout } = useAuth();
-  const { entries, loading: dashboardLoading, addEntry, updateEntry, downloadFile } = useDashboard();
-  const [currentView, setCurrentView] = useState<'dashboard' | 'add' | 'view'>('dashboard');
+  const { entries, loading: dashboardLoading, addEntry, updateEntry, deleteEntry } = useDashboard();
+  const [currentView, setCurrentView] = useState<'add' | 'view'>('add');
+  const [editingEntry, setEditingEntry] = useState<DashboardEntry | null>(null);
 
   if (authLoading || dashboardLoading) {
     return (
@@ -30,27 +31,46 @@ const Index = () => {
   }
 
   const handleEditEntry = (entry: DashboardEntry) => {
-    console.log('Edit entry:', entry);
-    // TODO: Implement edit modal
+    setEditingEntry(entry);
   };
+
+  const handleUpdateEntry = async (id: string, updates: Partial<DashboardEntry>) => {
+    await updateEntry(id, updates);
+    setEditingEntry(null);
+  };
+
+  const handleDeleteEntry = async (id: string) => {
+    await deleteEntry(id);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingEntry(null);
+  };
+
+  if (editingEntry) {
+    return (
+      <DashboardLayout
+        currentView={currentView}
+        onViewChange={setCurrentView}
+        onLogout={logout}
+      >
+        <div>
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-foreground mb-2">Edit Entry</h1>
+            <p className="text-muted-foreground">Update the project entry details.</p>
+          </div>
+          <EditEntryForm 
+            entry={editingEntry}
+            onSubmit={handleUpdateEntry}
+            onCancel={handleCancelEdit}
+          />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   const renderContent = () => {
     switch (currentView) {
-      case 'dashboard':
-        return (
-          <div>
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard Overview</h1>
-              <p className="text-muted-foreground">Welcome back! Here's your project summary.</p>
-            </div>
-            <DashboardStats entries={entries} />
-            <ViewEntriesTable 
-              entries={entries.slice(0, 5)} 
-              onEdit={handleEditEntry}
-              onDownload={downloadFile}
-            />
-          </div>
-        );
       case 'add':
         return (
           <div>
@@ -71,7 +91,7 @@ const Index = () => {
             <ViewEntriesTable 
               entries={entries}
               onEdit={handleEditEntry}
-              onDownload={downloadFile}
+              onDelete={handleDeleteEntry}
             />
           </div>
         );
