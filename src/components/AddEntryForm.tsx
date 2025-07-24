@@ -24,6 +24,7 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
     start_fieldwork_date: '',
     end_fieldwork_date: '',
     report_submission_date: '',
+    invoice_number: '',
     expected_payment_date: '',
     payment_received_date: '',
     total_amount_inr: 0,
@@ -61,6 +62,7 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
         start_fieldwork_date: '',
         end_fieldwork_date: '',
         report_submission_date: '',
+        invoice_number: '',
         expected_payment_date: '',
         payment_received_date: '',
         total_amount_inr: 0,
@@ -170,6 +172,20 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
                   <Upload className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
+              <div>
+                <Label htmlFor="invoice_src_file">Invoice Source File</Label>
+                <div className="mt-1 flex items-center gap-2">
+                  <Input type="file" id="invoice_src_file" accept=".pdf,.doc,.docx" />
+                  <Upload className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="invoice_pdf_file">Invoice PDF File</Label>
+                <div className="mt-1 flex items-center gap-2">
+                  <Input type="file" id="invoice_pdf_file" accept=".pdf" />
+                  <Upload className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -211,6 +227,15 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Financial Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="invoice_number">Invoice Number</Label>
+                <Input
+                  id="invoice_number"
+                  value={formData.invoice_number}
+                  onChange={(e) => handleInputChange('invoice_number', e.target.value)}
+                  required
+                />
+              </div>
               <div>
                 <Label htmlFor="total_amount_inr">Total Amount (INR)</Label>
                 <Input

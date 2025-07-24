@@ -26,6 +26,7 @@ export const EditEntryForm = ({ entry, onSubmit, onCancel }: EditEntryFormProps)
     start_fieldwork_date: entry.start_fieldwork_date.toISOString().split('T')[0],
     end_fieldwork_date: entry.end_fieldwork_date.toISOString().split('T')[0],
     report_submission_date: entry.report_submission_date.toISOString().split('T')[0],
+    invoice_number: entry.invoice_number,
     expected_payment_date: entry.expected_payment_date.toISOString().split('T')[0],
     payment_received_date: entry.payment_received_date ? entry.payment_received_date.toISOString().split('T')[0] : '',
     total_amount_inr: entry.total_amount_inr,
@@ -161,6 +162,15 @@ export const EditEntryForm = ({ entry, onSubmit, onCancel }: EditEntryFormProps)
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Financial Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="invoice_number">Invoice Number</Label>
+                <Input
+                  id="invoice_number"
+                  value={formData.invoice_number}
+                  onChange={(e) => handleInputChange('invoice_number', e.target.value)}
+                  required
+                />
+              </div>
               <div>
                 <Label htmlFor="total_amount_inr">Total Amount (INR)</Label>
                 <Input

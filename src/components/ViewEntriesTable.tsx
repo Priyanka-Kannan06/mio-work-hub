@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { DashboardEntry, FilterOptions } from '@/types/dashboard';
 import { Search, Filter, Edit, Trash2, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { EntryDetailsModal } from './EntryDetailsModal';
 
 interface ViewEntriesTableProps {
   entries: DashboardEntry[];
@@ -20,13 +21,16 @@ export const ViewEntriesTable = ({ entries, onEdit, onDelete }: ViewEntriesTable
   const [filters, setFilters] = useState<FilterOptions>({
     dateRange: 'last10days'
   });
+  const [selectedEntry, setSelectedEntry] = useState<DashboardEntry | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
 
   const filteredEntries = entries.filter(entry => {
     const matchesSearch = 
       entry.work_reference_mail.toLowerCase().includes(searchTerm.toLowerCase()) ||
       entry.quotation_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      entry.work_order_no.toLowerCase().includes(searchTerm.toLowerCase());
+      entry.work_order_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      entry.invoice_number.toLowerCase().includes(searchTerm.toLowerCase());
 
     const now = new Date();
     const entryDate = new Date(entry.created_at);
@@ -84,108 +88,130 @@ export const ViewEntriesTable = ({ entries, onEdit, onDelete }: ViewEntriesTable
     }
   };
 
+  const handleViewEntry = (entry: DashboardEntry) => {
+    setSelectedEntry(entry);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEntry(null);
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Filter className="h-5 w-5" />
-          Project Entries
-        </CardTitle>
-        
-        {/* Search and Filter Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by reference mail, quotation, or work order..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Project Entries
+          </CardTitle>
           
-          <div className="flex gap-2">
-            <Button
-              variant={filters.dateRange === 'last10days' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setFilters({ ...filters, dateRange: 'last10days' })}
-            >
-              Last 10 Days
-            </Button>
-            <Button
-              variant={filters.dateRange === 'last30days' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setFilters({ ...filters, dateRange: 'last30days' })}
-            >
-              Last 30 Days
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Reference Mail</TableHead>
-                <TableHead>Quotation No</TableHead>
-                <TableHead>Work Order No</TableHead>
-                <TableHead>Mail Date</TableHead>
-                <TableHead>Fieldwork Period</TableHead>
-                <TableHead>Total Amount</TableHead>
-                <TableHead>Payment Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredEntries.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell className="font-medium">
-                    {entry.work_reference_mail}
-                  </TableCell>
-                  <TableCell>{entry.quotation_no}</TableCell>
-                  <TableCell>{entry.work_order_no}</TableCell>
-                  <TableCell>{formatDate(entry.mail_date)}</TableCell>
-                  <TableCell>
-                    <div className="text-sm">
-                      {formatDate(entry.start_fieldwork_date)} - {formatDate(entry.end_fieldwork_date)}
-                    </div>
-                  </TableCell>
-                  <TableCell>{formatCurrency(entry.total_amount_inr)}</TableCell>
-                  <TableCell>{getPaymentStatus(entry)}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onEdit(entry)}
-                        title="Edit entry"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(entry.id)}
-                        title="Delete entry"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          
-          {filteredEntries.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              No entries found matching your criteria.
+          {/* Search and Filter Controls */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by reference mail, quotation, work order, or invoice number..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            
+            <div className="flex gap-2">
+              <Button
+                variant={filters.dateRange === 'last10days' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilters({ ...filters, dateRange: 'last10days' })}
+              >
+                Last 10 Days
+              </Button>
+              <Button
+                variant={filters.dateRange === 'last30days' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilters({ ...filters, dateRange: 'last30days' })}
+              >
+                Last 30 Days
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Reference Mail</TableHead>
+                  <TableHead>Quotation No</TableHead>
+                  <TableHead>Work Order No</TableHead>
+                  <TableHead>Invoice No</TableHead>
+                  <TableHead>Mail Date</TableHead>
+                  <TableHead>Total Amount</TableHead>
+                  <TableHead>Payment Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredEntries.map((entry) => (
+                  <TableRow key={entry.id}>
+                    <TableCell className="font-medium">
+                      {entry.work_reference_mail}
+                    </TableCell>
+                    <TableCell>{entry.quotation_no}</TableCell>
+                    <TableCell>{entry.work_order_no}</TableCell>
+                    <TableCell>{entry.invoice_number}</TableCell>
+                    <TableCell>{formatDate(entry.mail_date)}</TableCell>
+                    <TableCell>{formatCurrency(entry.total_amount_inr)}</TableCell>
+                    <TableCell>{getPaymentStatus(entry)}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleViewEntry(entry)}
+                          title="View entry details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onEdit(entry)}
+                          title="Edit entry"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDelete(entry.id)}
+                          title="Delete entry"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            
+            {filteredEntries.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                No entries found matching your criteria.
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <EntryDetailsModal
+        entry={selectedEntry}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
+    </>
   );
 };

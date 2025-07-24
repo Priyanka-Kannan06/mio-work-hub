@@ -12,6 +12,7 @@ export interface DashboardEntry {
   end_fieldwork_date: Date;
   report_submission_date: Date;
   report_file?: File;
+  invoice_number: string;
   invoice_src_file?: File;
   invoice_pdf_file?: File;
   expected_payment_date: Date;
