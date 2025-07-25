@@ -147,7 +147,6 @@ export const ViewEntriesTable = ({ entries, onEdit, onDelete }: ViewEntriesTable
                   <TableHead>Quotation No</TableHead>
                   <TableHead>Work Order No</TableHead>
                   <TableHead>Invoice No</TableHead>
-                  <TableHead>Mail Date</TableHead>
                   <TableHead>Total Amount</TableHead>
                   <TableHead>Payment Status</TableHead>
                   <TableHead>Actions</TableHead>
@@ -162,7 +161,6 @@ export const ViewEntriesTable = ({ entries, onEdit, onDelete }: ViewEntriesTable
                     <TableCell>{entry.quotation_no}</TableCell>
                     <TableCell>{entry.work_order_no}</TableCell>
                     <TableCell>{entry.invoice_number}</TableCell>
-                    <TableCell>{formatDate(entry.mail_date)}</TableCell>
                     <TableCell>{formatCurrency(entry.total_amount_inr)}</TableCell>
                     <TableCell>{getPaymentStatus(entry)}</TableCell>
                     <TableCell>
