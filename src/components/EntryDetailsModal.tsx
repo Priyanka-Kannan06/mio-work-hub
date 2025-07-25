@@ -56,16 +56,36 @@ export const EntryDetailsModal = ({ entry, isOpen, onClose }: EntryDetailsModalP
       URL.revokeObjectURL(url);
     };
 
+    const handleView = () => {
+      const url = URL.createObjectURL(file);
+      window.open(url, '_blank');
+    };
+
+    const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+
     return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleDownload}
-        className="flex items-center gap-2"
-      >
-        <Download className="h-4 w-4" />
-        {file.name}
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleDownload}
+          className="flex items-center gap-2"
+        >
+          <Download className="h-4 w-4" />
+          Download
+        </Button>
+        {isPDF && (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleView}
+            className="flex items-center gap-2"
+          >
+            <FileText className="h-4 w-4" />
+            View
+          </Button>
+        )}
+      </div>
     );
   };
 
