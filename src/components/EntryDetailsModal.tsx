@@ -42,9 +42,50 @@ export const EntryDetailsModal = ({ entry, isOpen, onClose }: EntryDetailsModalP
     return <Badge variant="secondary">Pending</Badge>;
   };
 
-  const FileDownloadLink = ({ file, label }: { file?: File; label: string }) => {
+  const FileDownloadLink = ({ file, label }: { file?: File | string; label: string }) => {
     if (!file) return <span className="text-muted-foreground">Not uploaded</span>;
     
+    // Handle URL strings
+    if (typeof file === 'string') {
+      const isValidUrl = file.startsWith('http') || file.startsWith('blob:');
+      if (!isValidUrl) return <span className="text-muted-foreground">Invalid file URL</span>;
+      
+      const isPDF = file.toLowerCase().includes('.pdf') || file.toLowerCase().includes('pdf');
+      
+      return (
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const a = document.createElement('a');
+              a.href = file;
+              a.download = label;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Download
+          </Button>
+          {isPDF && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => window.open(file, '_blank', 'noopener,noreferrer')}
+              className="flex items-center gap-2"
+            >
+              <FileText className="h-4 w-4" />
+              View
+            </Button>
+          )}
+        </div>
+      );
+    }
+    
+    // Handle File objects (existing functionality)
     const handleDownload = () => {
       const url = URL.createObjectURL(file);
       const a = document.createElement('a');
