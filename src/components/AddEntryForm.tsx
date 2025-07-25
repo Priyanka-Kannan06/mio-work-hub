@@ -107,10 +107,10 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
               />
             </div>
             <div>
-              <Label htmlFor="mail_date">Mail Date</Label>
+              <Label htmlFor="mail_date">Invoice No.</Label>
               <Input
                 id="mail_date"
-                type="date"
+                type="text"
                 value={formData.mail_date}
                 onChange={(e) => handleInputChange('mail_date', e.target.value)}
                 required
