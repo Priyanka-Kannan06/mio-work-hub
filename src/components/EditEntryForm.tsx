@@ -18,17 +18,24 @@ export const EditEntryForm = ({ entry, onSubmit, onCancel }: EditEntryFormProps)
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   
+  const formatDateForInput = (date: Date | undefined | null): string => {
+    if (!date) return '';
+    const validDate = new Date(date);
+    if (isNaN(validDate.getTime())) return '';
+    return validDate.toISOString().split('T')[0];
+  };
+
   const [formData, setFormData] = useState({
     work_reference_mail: entry.work_reference_mail,
-    mail_date: entry.mail_date.toISOString().split('T')[0],
+    mail_date: formatDateForInput(entry.mail_date),
     quotation_no: entry.quotation_no,
     work_order_no: entry.work_order_no,
-    start_fieldwork_date: entry.start_fieldwork_date.toISOString().split('T')[0],
-    end_fieldwork_date: entry.end_fieldwork_date.toISOString().split('T')[0],
-    report_submission_date: entry.report_submission_date.toISOString().split('T')[0],
+    start_fieldwork_date: formatDateForInput(entry.start_fieldwork_date),
+    end_fieldwork_date: formatDateForInput(entry.end_fieldwork_date),
+    report_submission_date: formatDateForInput(entry.report_submission_date),
     invoice_number: entry.invoice_number,
-    expected_payment_date: entry.expected_payment_date.toISOString().split('T')[0],
-    payment_received_date: entry.payment_received_date ? entry.payment_received_date.toISOString().split('T')[0] : '',
+    expected_payment_date: formatDateForInput(entry.expected_payment_date),
+    payment_received_date: formatDateForInput(entry.payment_received_date),
     total_amount_inr: entry.total_amount_inr,
     amount_received_inr: entry.amount_received_inr,
     tds_amount: entry.tds_amount,
