@@ -17,7 +17,7 @@ export const useAuth = () => {
 
   const login = async (email: string, password: string) => {
     // This is a mock implementation - replace with Supabase auth
-    if (email === 'admin@example.com' && password === 'admin123') {
+    if (email === 'mioshservices@gmail.com' && password === 'Miosh@2023') {
       const user: User = {
         id: '1',
         email: email,
