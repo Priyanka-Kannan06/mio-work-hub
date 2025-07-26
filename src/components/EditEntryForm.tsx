@@ -17,29 +17,21 @@ interface EditEntryFormProps {
 export const EditEntryForm = ({ entry, onSubmit, onCancel }: EditEntryFormProps) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  
-  const formatDateForInput = (date: Date | undefined | null): string => {
-    if (!date) return '';
-    const validDate = new Date(date);
-    if (isNaN(validDate.getTime())) return '';
-    return validDate.toISOString().split('T')[0];
-  };
 
   const [formData, setFormData] = useState({
     work_reference_mail: entry.work_reference_mail,
-    mail_date: formatDateForInput(entry.mail_date),
+    invoice_number: entry.invoice_number, // Changed from mail_date
     quotation_no: entry.quotation_no,
     work_order_no: entry.work_order_no,
-    start_fieldwork_date: formatDateForInput(entry.start_fieldwork_date),
-    end_fieldwork_date: formatDateForInput(entry.end_fieldwork_date),
-    report_submission_date: formatDateForInput(entry.report_submission_date),
-    invoice_number: entry.invoice_number,
-    expected_payment_date: formatDateForInput(entry.expected_payment_date),
-    payment_received_date: formatDateForInput(entry.payment_received_date),
-    total_amount_inr: entry.total_amount_inr,
-    amount_received_inr: entry.amount_received_inr,
-    tds_amount: entry.tds_amount,
-    gst_amount: entry.gst_amount,
+    start_fieldwork_date: entry.start_fieldwork_date ? new Date(entry.start_fieldwork_date).toISOString().split('T')[0] : '',
+    end_fieldwork_date: entry.end_fieldwork_date ? new Date(entry.end_fieldwork_date).toISOString().split('T')[0] : '',
+    report_submission_date: entry.report_submission_date ? new Date(entry.report_submission_date).toISOString().split('T')[0] : '',
+    expected_payment_date: entry.expected_payment_date ? new Date(entry.expected_payment_date).toISOString().split('T')[0] : '',
+    payment_received_date: entry.payment_received_date ? new Date(entry.payment_received_date).toISOString().split('T')[0] : '',
+    total_amount: entry.total_amount || 0, // Changed from total_amount_inr
+    amount_received: entry.amount_received || 0, // Changed from amount_received_inr
+    tds_amount: entry.tds_amount || 0,
+    gst_amount: entry.gst_amount || 0,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,7 +41,6 @@ export const EditEntryForm = ({ entry, onSubmit, onCancel }: EditEntryFormProps)
     try {
       await onSubmit(entry.id, {
         ...formData,
-        mail_date: new Date(formData.mail_date),
         start_fieldwork_date: new Date(formData.start_fieldwork_date),
         end_fieldwork_date: new Date(formData.end_fieldwork_date),
         report_submission_date: new Date(formData.report_submission_date),
@@ -98,12 +89,11 @@ export const EditEntryForm = ({ entry, onSubmit, onCancel }: EditEntryFormProps)
               />
             </div>
             <div>
-              <Label htmlFor="mail_date">Mail Date</Label>
+              <Label htmlFor="invoice_number">Invoice Number</Label>
               <Input
-                id="mail_date"
-                type="date"
-                value={formData.mail_date}
-                onChange={(e) => handleInputChange('mail_date', e.target.value)}
+                id="invoice_number"
+                value={formData.invoice_number}
+                onChange={(e) => handleInputChange('invoice_number', e.target.value)}
                 required
               />
             </div>
@@ -170,31 +160,24 @@ export const EditEntryForm = ({ entry, onSubmit, onCancel }: EditEntryFormProps)
             <h3 className="text-lg font-semibold">Financial Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="invoice_number">Invoice Number</Label>
+                <Label htmlFor="total_amount">Total Amount (Currency)</Label>
                 <Input
-                  id="invoice_number"
-                  value={formData.invoice_number}
-                  onChange={(e) => handleInputChange('invoice_number', e.target.value)}
+                  id="total_amount"
+                  type="number"
+                  step="0.01"
+                  value={formData.total_amount}
+                  onChange={(e) => handleInputChange('total_amount', parseFloat(e.target.value) || 0)}
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="total_amount_inr">Total Amount (INR)</Label>
+                <Label htmlFor="amount_received">Amount Received (Currency)</Label>
                 <Input
-                  id="total_amount_inr"
+                  id="amount_received"
                   type="number"
-                  value={formData.total_amount_inr}
-                  onChange={(e) => handleInputChange('total_amount_inr', parseFloat(e.target.value) || 0)}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="amount_received_inr">Amount Received (INR)</Label>
-                <Input
-                  id="amount_received_inr"
-                  type="number"
-                  value={formData.amount_received_inr}
-                  onChange={(e) => handleInputChange('amount_received_inr', parseFloat(e.target.value) || 0)}
+                  step="0.01"
+                  value={formData.amount_received}
+                  onChange={(e) => handleInputChange('amount_received', parseFloat(e.target.value) || 0)}
                 />
               </div>
               <div>
@@ -202,6 +185,7 @@ export const EditEntryForm = ({ entry, onSubmit, onCancel }: EditEntryFormProps)
                 <Input
                   id="tds_amount"
                   type="number"
+                  step="0.01"
                   value={formData.tds_amount}
                   onChange={(e) => handleInputChange('tds_amount', parseFloat(e.target.value) || 0)}
                 />
@@ -211,6 +195,7 @@ export const EditEntryForm = ({ entry, onSubmit, onCancel }: EditEntryFormProps)
                 <Input
                   id="gst_amount"
                   type="number"
+                  step="0.01"
                   value={formData.gst_amount}
                   onChange={(e) => handleInputChange('gst_amount', parseFloat(e.target.value) || 0)}
                 />

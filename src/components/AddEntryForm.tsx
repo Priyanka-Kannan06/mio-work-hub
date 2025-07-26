@@ -20,17 +20,16 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
   
   const [formData, setFormData] = useState({
     work_reference_mail: '',
-    mail_date: '',
+    invoice_number: '', // Changed from mail_date
     quotation_no: '',
     work_order_no: '',
     start_fieldwork_date: '',
     end_fieldwork_date: '',
     report_submission_date: '',
-    invoice_number: '',
     expected_payment_date: '',
     payment_received_date: '',
-    total_amount_inr: 0,
-    amount_received_inr: 0,
+    total_amount: 0, // Changed from total_amount_inr
+    amount_received: 0, // Changed from amount_received_inr
     tds_amount: 0,
     gst_amount: 0,
   });
@@ -66,7 +65,6 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
       const entryData = {
         ...formData,
         ...fileUrls,
-        mail_date: new Date(formData.mail_date),
         start_fieldwork_date: new Date(formData.start_fieldwork_date),
         end_fieldwork_date: new Date(formData.end_fieldwork_date),
         report_submission_date: new Date(formData.report_submission_date),
@@ -84,17 +82,16 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
       // Reset form
       setFormData({
         work_reference_mail: '',
-        mail_date: '',
+        invoice_number: '',
         quotation_no: '',
         work_order_no: '',
         start_fieldwork_date: '',
         end_fieldwork_date: '',
         report_submission_date: '',
-        invoice_number: '',
         expected_payment_date: '',
         payment_received_date: '',
-        total_amount_inr: 0,
-        amount_received_inr: 0,
+        total_amount: 0,
+        amount_received: 0,
         tds_amount: 0,
         gst_amount: 0,
       });
@@ -149,12 +146,11 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
               />
             </div>
             <div>
-              <Label htmlFor="mail_date">Mail Date</Label>
+              <Label htmlFor="invoice_number">Invoice Number</Label>
               <Input
-                id="mail_date"
-                type="date"
-                value={formData.mail_date}
-                onChange={(e) => handleInputChange('mail_date', e.target.value)}
+                id="invoice_number"
+                value={formData.invoice_number}
+                onChange={(e) => handleInputChange('invoice_number', e.target.value)}
                 required
               />
             </div>
@@ -300,31 +296,24 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
             <h3 className="text-lg font-semibold">Financial Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="invoice_number">Invoice Number</Label>
+                <Label htmlFor="total_amount">Total Amount (Currency)</Label>
                 <Input
-                  id="invoice_number"
-                  value={formData.invoice_number}
-                  onChange={(e) => handleInputChange('invoice_number', e.target.value)}
+                  id="total_amount"
+                  type="number"
+                  step="0.01"
+                  value={formData.total_amount}
+                  onChange={(e) => handleInputChange('total_amount', parseFloat(e.target.value) || 0)}
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="total_amount_inr">Total Amount (INR)</Label>
+                <Label htmlFor="amount_received">Amount Received (Currency)</Label>
                 <Input
-                  id="total_amount_inr"
+                  id="amount_received"
                   type="number"
-                  value={formData.total_amount_inr}
-                  onChange={(e) => handleInputChange('total_amount_inr', parseFloat(e.target.value) || 0)}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="amount_received_inr">Amount Received (INR)</Label>
-                <Input
-                  id="amount_received_inr"
-                  type="number"
-                  value={formData.amount_received_inr}
-                  onChange={(e) => handleInputChange('amount_received_inr', parseFloat(e.target.value) || 0)}
+                  step="0.01"
+                  value={formData.amount_received}
+                  onChange={(e) => handleInputChange('amount_received', parseFloat(e.target.value) || 0)}
                 />
               </div>
               <div>
@@ -332,6 +321,7 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
                 <Input
                   id="tds_amount"
                   type="number"
+                  step="0.01"
                   value={formData.tds_amount}
                   onChange={(e) => handleInputChange('tds_amount', parseFloat(e.target.value) || 0)}
                 />
@@ -341,6 +331,7 @@ export const AddEntryForm = ({ onSubmit }: AddEntryFormProps) => {
                 <Input
                   id="gst_amount"
                   type="number"
+                  step="0.01"
                   value={formData.gst_amount}
                   onChange={(e) => handleInputChange('gst_amount', parseFloat(e.target.value) || 0)}
                 />

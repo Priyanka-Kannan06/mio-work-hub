@@ -25,13 +25,15 @@ export const useDashboard = () => {
 
       const formattedEntries: DashboardEntry[] = data.map(entry => ({
         ...entry,
-        mail_date: new Date(entry.mail_date),
         start_fieldwork_date: new Date(entry.start_fieldwork_date),
         end_fieldwork_date: new Date(entry.end_fieldwork_date),
         report_submission_date: new Date(entry.report_submission_date),
         expected_payment_date: new Date(entry.expected_payment_date),
         payment_received_date: entry.payment_received_date ? new Date(entry.payment_received_date) : undefined,
         created_at: new Date(entry.created_at),
+        // Map the database fields to the new interface
+        total_amount: entry.total_amount_inr || entry.total_amount || 0,
+        amount_received: entry.amount_received_inr || entry.amount_received || 0,
       }));
 
       setEntries(formattedEntries);
@@ -74,7 +76,7 @@ export const useDashboard = () => {
       // Prepare the data for insertion
       const insertData = {
         work_reference_mail: entry.work_reference_mail,
-        mail_date: entry.mail_date.toISOString().split('T')[0],
+        invoice_number: entry.invoice_number, // Changed mapping
         quotation_no: entry.quotation_no,
         work_quotation_src: typeof entry.work_quotation_src === 'string' ? entry.work_quotation_src : null,
         work_quotation_pdf: typeof entry.work_quotation_pdf === 'string' ? entry.work_quotation_pdf : null,
@@ -84,13 +86,12 @@ export const useDashboard = () => {
         end_fieldwork_date: entry.end_fieldwork_date.toISOString().split('T')[0],
         report_submission_date: entry.report_submission_date.toISOString().split('T')[0],
         report_file: typeof entry.report_file === 'string' ? entry.report_file : null,
-        invoice_number: entry.invoice_number,
         invoice_src_file: typeof entry.invoice_src_file === 'string' ? entry.invoice_src_file : null,
         invoice_pdf_file: typeof entry.invoice_pdf_file === 'string' ? entry.invoice_pdf_file : null,
         expected_payment_date: entry.expected_payment_date.toISOString().split('T')[0],
         payment_received_date: entry.payment_received_date ? entry.payment_received_date.toISOString().split('T')[0] : null,
-        total_amount_inr: entry.total_amount_inr,
-        amount_received_inr: entry.amount_received_inr,
+        total_amount_inr: entry.total_amount, // Map to database field
+        amount_received_inr: entry.amount_received, // Map to database field
         tds_amount: entry.tds_amount,
         gst_amount: entry.gst_amount,
       };
@@ -118,11 +119,15 @@ export const useDashboard = () => {
     try {
       const updateData: any = {};
       
-      // Convert dates to ISO strings for database
+      // Convert dates to ISO strings for database and map field names
       Object.keys(updates).forEach(key => {
         const value = updates[key as keyof DashboardEntry];
         if (value instanceof Date) {
           updateData[key] = value.toISOString().split('T')[0];
+        } else if (key === 'total_amount') {
+          updateData['total_amount_inr'] = value; // Map to database field
+        } else if (key === 'amount_received') {
+          updateData['amount_received_inr'] = value; // Map to database field
         } else if (typeof value === 'string' || typeof value === 'number' || value === null || value === undefined) {
           updateData[key] = value;
         }
