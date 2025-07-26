@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      dashboard_entries: {
+        Row: {
+          amount_received_inr: number
+          created_at: string | null
+          end_fieldwork_date: string
+          expected_payment_date: string
+          gst_amount: number
+          id: string
+          invoice_number: string
+          invoice_pdf_file: string | null
+          invoice_src_file: string | null
+          mail_date: string
+          payment_received_date: string | null
+          quotation_no: string
+          report_file: string | null
+          report_submission_date: string
+          start_fieldwork_date: string
+          tds_amount: number
+          total_amount_inr: number
+          updated_at: string | null
+          work_order_file: string | null
+          work_order_no: string
+          work_quotation_pdf: string | null
+          work_quotation_src: string | null
+          work_reference_mail: string
+        }
+        Insert: {
+          amount_received_inr?: number
+          created_at?: string | null
+          end_fieldwork_date: string
+          expected_payment_date: string
+          gst_amount?: number
+          id?: string
+          invoice_number: string
+          invoice_pdf_file?: string | null
+          invoice_src_file?: string | null
+          mail_date: string
+          payment_received_date?: string | null
+          quotation_no: string
+          report_file?: string | null
+          report_submission_date: string
+          start_fieldwork_date: string
+          tds_amount?: number
+          total_amount_inr?: number
+          updated_at?: string | null
+          work_order_file?: string | null
+          work_order_no: string
+          work_quotation_pdf?: string | null
+          work_quotation_src?: string | null
+          work_reference_mail: string
+        }
+        Update: {
+          amount_received_inr?: number
+          created_at?: string | null
+          end_fieldwork_date?: string
+          expected_payment_date?: string
+          gst_amount?: number
+          id?: string
+          invoice_number?: string
+          invoice_pdf_file?: string | null
+          invoice_src_file?: string | null
+          mail_date?: string
+          payment_received_date?: string | null
+          quotation_no?: string
+          report_file?: string | null
+          report_submission_date?: string
+          start_fieldwork_date?: string
+          tds_amount?: number
+          total_amount_inr?: number
+          updated_at?: string | null
+          work_order_file?: string | null
+          work_order_no?: string
+          work_quotation_pdf?: string | null
+          work_quotation_src?: string | null
+          work_reference_mail?: string
+        }
+        Relationships: []
+      }
       miosh_records: {
         Row: {
           quotation_no: string | null

@@ -1,4 +1,3 @@
-
 import {
   Dialog,
   DialogContent,
@@ -9,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DashboardEntry } from '@/types/dashboard';
 import { Download, FileText, Calendar, DollarSign, Mail } from 'lucide-react';
+import { downloadFile, getFileNameFromUrl } from '@/utils/fileUtils';
 
 interface EntryDetailsModalProps {
   entry: DashboardEntry | null;
@@ -45,26 +45,20 @@ export const EntryDetailsModal = ({ entry, isOpen, onClose }: EntryDetailsModalP
   const FileDownloadLink = ({ file, label }: { file?: File | string; label: string }) => {
     if (!file) return <span className="text-muted-foreground">Not uploaded</span>;
     
-    // Handle URL strings
+    // Handle URL strings (from Supabase storage)
     if (typeof file === 'string') {
       const isValidUrl = file.startsWith('http') || file.startsWith('blob:');
       if (!isValidUrl) return <span className="text-muted-foreground">Invalid file URL</span>;
       
-      const isPDF = file.toLowerCase().includes('.pdf') || file.toLowerCase().includes('pdf');
+      const fileName = getFileNameFromUrl(file, label);
+      const isPDF = file.toLowerCase().includes('.pdf') || fileName.toLowerCase().includes('.pdf');
       
       return (
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              const a = document.createElement('a');
-              a.href = file;
-              a.download = label;
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-            }}
+            onClick={() => downloadFile(file, fileName)}
             className="flex items-center gap-2"
           >
             <Download className="h-4 w-4" />
@@ -78,14 +72,14 @@ export const EntryDetailsModal = ({ entry, isOpen, onClose }: EntryDetailsModalP
               className="flex items-center gap-2"
             >
               <FileText className="h-4 w-4" />
-              View
+              View PDF
             </Button>
           )}
         </div>
       );
     }
     
-    // Handle File objects (existing functionality)
+    // Handle File objects (for local files before upload)
     const handleDownload = () => {
       const url = URL.createObjectURL(file);
       const a = document.createElement('a');
@@ -123,7 +117,7 @@ export const EntryDetailsModal = ({ entry, isOpen, onClose }: EntryDetailsModalP
             className="flex items-center gap-2"
           >
             <FileText className="h-4 w-4" />
-            View
+            View PDF
           </Button>
         )}
       </div>
